@@ -2,7 +2,7 @@
   <div class="container">
     <h1>Upload a photo</h1>
     <div>
-      <button class="btn btn-primary" @click="click1">choose photo</button>
+      <button class="btn btn-primary my-5" @click="click1">choose photo</button>
       <input
         type="file"
         ref="input1"
@@ -15,6 +15,11 @@
     <div v-if="imageData != null">
       <img class="preview" height="268" width="356" :src="img1" />
       <br />
+    </div>
+
+    <div v-if="uploadValue === 100">
+      <p>Image URL:</p>
+      <code>{{ img1 }}</code>
     </div>
 
     <div v-if="uploadValue > 0 && uploadValue < 100">
@@ -73,7 +78,6 @@ export default {
           this.uploadValue = 100;
           storageRef.snapshot.ref.getDownloadURL().then((url) => {
             this.img1 = url;
-            console.log(this.img1);
           });
         }
       );
