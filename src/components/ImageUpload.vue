@@ -1,8 +1,9 @@
 <template>
+  <div class="container-fluid">
   <div class="container">
-    <h1>Upload a photo</h1>
-    <div>
-      <button class="btn btn-primary my-5" @click="click1">choose photo</button>
+    <h1>upload content for molise20</h1>
+    <div style="margin-bottom:30px;">
+      <button class="btn btn-primary" @click="click1">choose photo</button>
       <input
         type="file"
         ref="input1"
@@ -36,7 +37,16 @@
         </div>
       </div>
     </div>
+
+    <div v-if="fileList.length > 0">
+      <h2>Files in Storage:</h2>
+     
+        <div v-for="(file, index) in fileList" :key="index">
+          <a :href="file.url" target="_blank">{{ file.name }}</a>
+       </div>
+    </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -48,6 +58,7 @@ export default {
       img1: "",
       imageData: null,
       uploadValue: 0,
+      fileList: [], // List of files
     };
   },
   methods: {
@@ -58,9 +69,17 @@ export default {
       this.$refs.input1.click();
     },
     previewImage(event) {
+      const file = event.target.files[0];
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+
+      if (!allowedTypes.includes(file.type)) {
+        alert("Only images are allowed.");
+        return;
+      }
+
       this.uploadValue = 0;
       this.img1 = null;
-      this.imageData = event.target.files[0];
+      this.imageData = file;
       this.onUpload();
     },
     onUpload() {
@@ -79,9 +98,32 @@ export default {
           storageRef.snapshot.ref.getDownloadURL().then((url) => {
             this.img1 = url;
           });
+          this.fetchFilesFromStorage(); // Fetch the updated list of files
         }
       );
     },
+    fetchFilesFromStorage() {
+  const storageRef = firebase.storage().ref();
+  storageRef
+    .listAll()
+    .then((res) => {
+      this.fileList = []; // Empty the fileList array before populating it
+      res.items.forEach((itemRef) => {
+        itemRef.getDownloadURL().then((url) => {
+          this.fileList.push({
+            name: itemRef.name,
+            url: url,
+          });
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching files:", error);
+    });
+},
+  },
+  mounted() {
+    this.fetchFilesFromStorage(); // Fetch the files when the component is mounted
   },
 };
 </script>
