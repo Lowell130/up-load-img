@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
   <div class="container">
-    <h1>upload content for molise20</h1>
+    <h1>upload content</h1>
     <div style="margin-bottom:30px;">
       <button class="btn btn-primary" @click="click1">choose photo</button>
       <input
